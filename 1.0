@@ -1,0 +1,56 @@
+/* 
+Project aim 'To build a street light that will save electricity
+Code Written by Swet Shreet
+*/
+#define LIGHT1 D0   //Connect fisrt light to pin D0 and Ground
+#define LIGHT2 D1   //Connect second light to pin D1 and Ground
+#define TRIG1 D5    //Connect D5 to TRIG of first sensor
+#define TRIG2 D6    //Connect D6 to ECHO of second sensor
+#define ECHO1 D7    //Connect D7 to TRIG of first sensor
+#define ECHO2 D8    //Connect D8 to ECHO of second sensor
+
+int ultrasonic(int sensor_no) { //Finding distance using Ultrasonic Sensor ,typr sensor no. and get the result from respective sensor
+  TRIG0 = sensor_no == 1 ? TRIG1 : TRIG2 ;
+  ECHO0 = sensor_no == 1 ? ECHO1 : ECHO2 ;
+  digitalWrite(TRIG0, HIGH);
+  delayMicroseconds(2);
+  digitalWrite(TRIG0, LOW);
+  delayMicroseconds(10);
+ int  duration = pulseIn(ECHO0, HIGH);
+ int distance = duration *0.34 / 2;
+  Serial.println(distance);
+  return distance;
+}
+
+void setup(void) {
+  Serial.begin(115200);
+  pinMode(LIGHT1, OUTPUT);
+  pinMode(LIGHT2, OUTPUT);
+  pinMode(TRIG1, OUTPUT);
+  pinMode(ECHO1, INPUT);
+  pinMode(TRIG2, OUTPUT);
+  pinMode(ECHO2, INPUT);
+}
+
+
+void loop(void) {
+  int sum1=0,sum2=0;
+  for (int i=0 ;i<100; i++){
+      sum1 += distance(1) ;
+      sum2 += distance(2) ;
+    }
+  int avg_distance1 = sum1/100;  // calculate the rough distance of first sensor from wall.
+  int avg_distance2 = sum2/100;  // calculate the rough distance of second sensor from wall.
+  int obs_distance1 = distance(1) // calulate the distance to obstacle from first sensor if any.
+  int obs_distance2 = distance(2) // calulate the distance to obstacle from second sensor if any.
+  if ( avg_distance1/2 < obs_distance1 && avg_distance1*2 > obs_distance1 ){
+  digitalWrite(LIGHT1, HIGH);   // if there is an osbtacle near sensor1 , than it will turn on the light1 for 5 sec.
+  delay(5000);
+  }
+  if ( avg_distance2/2 < obs_distance2 && avg_distance2*2 > obs_distance2 ){
+  digitalWrite(LIGHT2, HIGH);   // if there is an obstacle near sensor2 , than it will turn on the light2 for 5 sec.
+  delay(5000);
+  }
+  
+
+}
